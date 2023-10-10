@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Air Quality Visualization</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css">
+    <style>
+        .description {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        section h2 {
+            color: #333;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .visualization {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Exploring Air Quality Across the Globe</h1>
+    <h2>A Visualization of AQI Values Across Different Cities</h2>
+
+    <!-- Map Visualization -->
+    <section>
+        <h2>Map Visualization</h2>
+        <div id="map" class="visualization"></div>
+    </section>
+
+    <!-- Description -->
+    <section>
+        <h2>About the Visualization</h2>
+        <p class="description">
+            This visualization illuminates the disparities in Air Quality Index (AQI) values across various cities
+            globally. Circles on the map represent cities, with their size and color indicating the AQI value; larger,
+            darker circles signify higher AQI values, illustrating poorer air quality. Divergent air quality conditions,
+            from "Good" to "Hazardous," reveal the multifaceted nature of global air quality challenges. Special
+            attention is brought to cities like Bahawalnagar, Pakistan, which experiences alarmingly poor air quality,
+            juxtaposed against cities like Macas, Ecuador, with notably cleaner air. Such visual representation
+            underscores the urgent need for global, targeted, and context-specific interventions to mitigate air
+            pollution and its pervasive impacts.
+        </p>
+    </section>
+
+    <!-- Histogram Visualization -->
+    <section>
+        <h2>Histogram Visualization</h2>
+        <div id="hist" class="visualization"></div>
+        <label for="aqiSlider">AQI Value:</label>
+        <input type="range" id="aqiSlider" name="aqiSlider" min="0" max="500">
+        <span id="sliderValue">0</span>
+    </section>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script>
+    
+        const histSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "A histogram of AQI values",
+            "data": {"url": "data_selected.csv"},
+            "mark": "bar",
+            "encoding": {
+              "x": {"bin": true, "field": "AQI Value", "type": "quantitative"},
+              "y": {"aggregate": "count", "type": "quantitative"}
+            }
+        };
+
+        
+    
+        vegaEmbed('#map', 'map.json').catch(console.error);
+        vegaEmbed('#hist', histSpec).catch(console.error);
+    
+        document.getElementById('aqiSlider').addEventListener('input', function (e) {
+            let aqiValue = e.target.value;
+            document.getElementById('sliderValue').textContent = aqiValue;
+    
+            // Reload visualization with filtered data
+            vegaEmbed('#hist', {
+                ...histSpec,
+                "transform": [{ "filter": `datum["AQI Value"] <= ${aqiValue}` }]
+            }).catch(console.error);
+        });
+    </script>
+</body>
+
+</html>

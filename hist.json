@@ -1,0 +1,27 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "A histogram of AQI values",
+  "data": {"url": "data_selected.csv"},
+  "selection": {
+      "AQISlider": {
+          "type": "interval",
+          "encodings": ["x"],
+          "bind": {"input": "range", "min": 0, "max": 500, "step": 10}
+      }
+  },
+  "mark": "bar",
+  "encoding": {
+      "x": {"bin": true, "field": "AQI Value", "type": "quantitative"},
+      "y": {"aggregate": "count", "type": "quantitative"},
+      "color": {
+          "condition": {"selection": "AQISlider", "value": "steelblue"},
+          "value": "lightgrey"
+      },
+      "tooltip": [
+          {"field": "AQI Value", "type": "quantitative", "bin": true},
+          {"aggregate": "count", "type": "quantitative"}
+      ]
+  },
+  "height": 400,
+  "width": 600
+}
